@@ -1,4 +1,4 @@
-var CACHE = 'm3x4-v1';
+var CACHE = 'm3x4-v4';
 var FILES = ['/3x4/', '/3x4/index.html', '/3x4/manifest.json'];
 
 self.addEventListener('install', function(e){
@@ -13,16 +13,17 @@ self.addEventListener('activate', function(e){
   self.clients.claim();
 });
 
+// Network first: intenta siempre la red, usa caché solo si falla
 self.addEventListener('fetch', function(e){
   e.respondWith(
-    caches.match(e.request).then(function(cached){
-      return cached || fetch(e.request).then(function(resp){
-        var clone = resp.clone();
-        caches.open(CACHE).then(function(c){ c.put(e.request, clone); });
-        return resp;
-      });
+    fetch(e.request).then(function(resp){
+      var clone = resp.clone();
+      caches.open(CACHE).then(function(c){ c.put(e.request, clone); });
+      return resp;
     }).catch(function(){
-      return caches.match('/index.html');
+      return caches.match(e.request).then(function(cached){
+        return cached || caches.match('/3x4/index.html');
+      });
     })
   );
 });
