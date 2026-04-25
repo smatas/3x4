@@ -421,11 +421,26 @@ function renderPlay(){
   if(c.bets.length===0){hist='<div class="empty-hist">Ninguna sub-apuesta registrada.</div>';}
   else{
     var run=1;
-    c.bets.forEach(function(b,i){
-      var stk=(sk*run).toFixed(2);
-      if(b.win) run=parseFloat((run*b.odds).toFixed(6));
-      var after=b.win?run.toFixed(3)+'×':'perdida';
-      hist+='<div class="bh-row"><div class="bh-apuesta">'+(i+1)+'</div><div class="bh-dot '+(b.win?'win':'lose')+'"></div><div class="bh-odds">'+b.odds.toFixed(2)+'×</div><div class="bh-stake">'+stk+' € apostado</div><div class="bh-result '+(b.win?'win':'lose')+'">'+after+'</div></div>';
+    c.bets.forEach(function(b,bidx){
+      var isPlay=b.win===null;
+      var stk=isPlay?b.stake.toFixed(2):(sk*run).toFixed(2);
+      if(b.win===true) run=parseFloat((run*b.odds).toFixed(6));
+      var dotCls=isPlay?'play':(b.win?'win':'lose');
+      var resCls=isPlay?'play':(b.win?'win':'lose');
+      var after=isPlay?'⏳ en juego':(b.win===true?run.toFixed(3)+'×':'perdida');
+      var resolveRow=isPlay
+        ?'<div style="display:flex;gap:8px;margin-top:10px;">'
+          +'<button onclick="resolveInPlay('+bidx+',true)" style="flex:1;padding:12px;font-size:14px;font-weight:600;border-radius:var(--rs);cursor:pointer;border:none;background:var(--green-bg);color:var(--green);">✓ Ganada</button>'
+          +'<button onclick="resolveInPlay('+bidx+',false)" style="flex:1;padding:12px;font-size:14px;font-weight:600;border-radius:var(--rs);cursor:pointer;border:none;background:var(--red-bg);color:var(--red);">✗ Perdida</button>'
+          +'</div>'
+        :'';
+      hist+='<div class="bh-row'+(isPlay?' inplay':'')+'">'
+        +'<div class="bh-apuesta">'+(bidx+1)+'</div>'
+        +'<div class="bh-dot '+dotCls+'"></div>'
+        +'<div class="bh-odds">'+b.odds.toFixed(2)+'×</div>'
+        +'<div class="bh-stake">'+stk+' € apostado</div>'
+        +'<div class="bh-result '+resCls+'">'+after+'</div>'
+        +'</div>'+resolveRow;
     });
   }
   document.getElementById('bet-history').innerHTML=hist;
