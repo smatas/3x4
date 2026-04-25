@@ -136,6 +136,9 @@
       <div><div class="topbar-title">Método 3×4</div><div class="topbar-sub">Selecciona un reto</div></div>
     </div>
     <div id="home-sessions"></div>
+    <div style="margin-top:24px;border-top:0.5px solid var(--border);padding-top:16px;">
+      <button class="action-btn btn-neutral" onclick="resetAll()" style="font-size:14px;padding:12px;">🗑 Reiniciar todo — borrar ambos retos</button>
+    </div>
   </div>
 
   <div id="screen-setup" class="screen">
@@ -538,6 +541,12 @@ function renderResult(){
     ph+='<div class="ph-row"><div class="ph-dot '+dc+'"></div><div style="flex:1;"><div class="ph-name">Combinada '+(i+1)+' — '+phaseLabel(i)+'</div><div class="ph-detail '+dc+'">'+d+'</div></div></div>';
   });
   document.getElementById('result-phases').innerHTML=ph||'<div class="empty-hist">—</div>';
+}
+
+function resetAll(){
+  if(!confirm('¿Seguro que quieres borrar los dos retos y empezar de cero?')) return;
+  SESSIONS=[emptySession('Reto 1'),emptySession('Reto 2')];
+  save();renderHome();
 }
 
 window.addEventListener('load',function(){
