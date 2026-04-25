@@ -6,552 +6,509 @@
   <meta name="theme-color" content="#0C447C"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-  <meta name="apple-mobile-web-app-title" content="3x4 Bets"/>
+  <meta name="apple-mobile-web-app-title" content="3×4 Bets"/>
   <link rel="manifest" href="manifest.json"/>
   <link rel="apple-touch-icon" href="icons/icon-192.png"/>
   <title>Método 3×4</title>
   <style>
-    :root {
-      --bg: #ffffff;
-      --bg2: #f5f5f3;
-      --bg3: #eeece7;
-      --text: #1a1a1a;
-      --text2: #6b6b68;
-      --text3: #a0a09d;
-      --border: rgba(0,0,0,0.12);
-      --border2: rgba(0,0,0,0.22);
-      --blue-bg: #E6F1FB;
-      --blue-border: #B5D4F4;
-      --blue-text: #0C447C;
-      --blue-mid: #378ADD;
-      --green-bg: #EAF3DE;
-      --green-border: #C0DD97;
-      --green-text: #27500A;
-      --red-bg: #FCEBEB;
-      --red-border: #F7C1C1;
-      --red-text: #A32D2D;
-      --amber-bg: #FAEEDA;
-      --amber-text: #633806;
-      --radius: 12px;
-      --radius-sm: 8px;
-      --safe-top: env(safe-area-inset-top, 0px);
-      --safe-bot: env(safe-area-inset-bottom, 0px);
+    :root{
+      --bg:#ffffff;--bg2:#f5f5f3;--bg3:#eeece7;
+      --text:#1a1a1a;--text2:#6b6b68;--text3:#a0a09d;
+      --border:rgba(0,0,0,0.12);--border2:rgba(0,0,0,0.22);
+      --blue-bg:#E6F1FB;--blue-b:#B5D4F4;--blue:#0C447C;--blue-mid:#378ADD;
+      --green-bg:#EAF3DE;--green-b:#C0DD97;--green:#27500A;
+      --red-bg:#FCEBEB;--red-b:#F7C1C1;--red:#A32D2D;
+      --amber-bg:#FAEEDA;--amber-b:#FAC775;--amber:#633806;
+      --r:12px;--rs:8px;
+      --safe-top:env(safe-area-inset-top,0px);
+      --safe-bot:env(safe-area-inset-bottom,0px);
     }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #1c1c1e;
-        --bg2: #2c2c2e;
-        --bg3: #3a3a3c;
-        --text: #f5f5f5;
-        --text2: #a0a09d;
-        --text3: #6b6b68;
-        --border: rgba(255,255,255,0.12);
-        --border2: rgba(255,255,255,0.22);
-        --blue-bg: #0c2a4a;
-        --blue-border: #1a4a7a;
-        --blue-text: #85B7EB;
-        --green-bg: #1a2e0a;
-        --green-border: #2d5a12;
-        --green-text: #97C459;
-        --red-bg: #2e0a0a;
-        --red-border: #5a1212;
-        --red-text: #F09595;
-        --amber-bg: #2e1e04;
-        --amber-text: #FAC775;
-      }
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
-    body { padding-top: var(--safe-top); padding-bottom: var(--safe-bot); overscroll-behavior: none; }
-
-    #app { max-width: 480px; margin: 0 auto; padding: 0 16px; }
-
-    .screen { display: none; padding-bottom: 2rem; }
-    .screen.active { display: block; }
-
-    /* Topbar */
-    .topbar { display: flex; align-items: center; justify-content: space-between; padding: 20px 0 18px; }
-    .topbar-title { font-size: 20px; font-weight: 600; }
-    .topbar-sub { font-size: 12px; color: var(--text2); margin-top: 1px; }
-    .back-btn { font-size: 14px; color: var(--blue-mid); background: none; border: none; cursor: pointer; padding: 4px 0; }
-
-    /* Cards */
-    .card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 16px 18px; margin-bottom: 10px; }
-
-    /* Section label */
-    .sec-label { font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 12px; }
-
-    /* Setup fields */
-    .field { margin-bottom: 14px; }
-    .field:last-child { margin-bottom: 0; }
-    .field-label { font-size: 13px; color: var(--text2); margin-bottom: 6px; }
-    .field-row { display: flex; align-items: center; gap: 10px; }
-    .field-row input { flex: 1; font-size: 18px; font-weight: 500; text-align: right; border: 0.5px solid var(--border2); border-radius: var(--radius-sm); padding: 10px 12px; background: var(--bg2); color: var(--text); -webkit-appearance: none; }
-    .field-row input:focus { outline: none; border-color: var(--blue-mid); }
-    .field-unit { font-size: 14px; color: var(--text2); min-width: 20px; }
-
-    /* Phase tabs */
-    .phase-tabs { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 6px; margin-bottom: 16px; }
-    .phase-tab { border: 0.5px solid var(--border); border-radius: var(--radius-sm); padding: 10px 4px; text-align: center; cursor: pointer; background: var(--bg); transition: all .15s; }
-    .phase-tab.active { border-color: var(--blue-mid); background: var(--blue-bg); }
-    .phase-tab.done { background: var(--green-bg); border-color: var(--green-border); }
-    .phase-tab.lost { background: var(--red-bg); border-color: var(--red-border); }
-    .phase-tab .pt-num { font-size: 10px; color: var(--text3); margin-bottom: 2px; font-weight: 600; letter-spacing: .04em; }
-    .phase-tab.active .pt-num { color: var(--blue-mid); }
-    .phase-tab.done .pt-num { color: var(--green-text); }
-    .phase-tab.lost .pt-num { color: var(--red-text); }
-    .phase-tab .pt-val { font-size: 14px; font-weight: 600; color: var(--text); }
-    .phase-tab.active .pt-val { color: var(--blue-text); }
-    .phase-tab.done .pt-val { color: var(--green-text); }
-    .phase-tab.lost .pt-val { color: var(--red-text); }
-
-    /* Ring */
-    .ring-wrap { display: flex; justify-content: center; padding: 8px 0 16px; }
-    .ring-inner { position: relative; width: 170px; height: 170px; }
-    .ring-inner svg { width: 170px; height: 170px; }
-    .ring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-    .ring-pct { font-size: 34px; font-weight: 700; }
-    .ring-note { font-size: 11px; color: var(--text2); margin-top: 2px; }
-
-    /* Mini stats */
-    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
-    .mini-stat { background: var(--bg2); border-radius: var(--radius-sm); padding: 12px 14px; }
-    .ms-label { font-size: 11px; color: var(--text2); }
-    .ms-val { font-size: 20px; font-weight: 600; margin-top: 2px; }
-
-    /* Next action */
-    .next-action { background: var(--blue-bg); border: 0.5px solid var(--blue-border); border-radius: var(--radius); padding: 16px 18px; margin-bottom: 10px; }
-    .na-label { font-size: 11px; font-weight: 600; color: var(--blue-mid); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
-    .na-amount { font-size: 38px; font-weight: 700; color: var(--blue-text); line-height: 1; }
-    .na-sub { font-size: 13px; color: var(--blue-mid); margin-top: 6px; }
-
-    /* Add bet */
-    .add-bet { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 16px 18px; margin-bottom: 10px; }
-    .add-bet-label { font-size: 13px; color: var(--text2); margin-bottom: 10px; }
-    .odds-input-wrap { display: flex; gap: 8px; }
-    .odds-input-wrap input { flex: 1; font-size: 28px; font-weight: 700; text-align: center; border: 0.5px solid var(--border2); border-radius: var(--radius-sm); padding: 12px; background: var(--bg2); color: var(--text); -webkit-appearance: none; }
-    .odds-input-wrap input:focus { outline: none; border-color: var(--blue-mid); }
-    .quick-odds { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
-    .qo-btn { font-size: 13px; font-weight: 500; padding: 7px 14px; border: 0.5px solid var(--border2); border-radius: 20px; background: var(--bg2); color: var(--text); cursor: pointer; transition: all .1s; }
-    .qo-btn:active { transform: scale(0.95); }
-    .qo-btn.highlight { border-color: var(--blue-mid); background: var(--blue-bg); color: var(--blue-text); }
-
-    /* Action buttons */
-    .action-btn { width: 100%; padding: 16px; font-size: 16px; font-weight: 600; border-radius: var(--radius); cursor: pointer; border: none; margin-bottom: 8px; transition: all .1s; }
-    .action-btn:active { transform: scale(0.98); }
-    .btn-win { background: var(--green-bg); color: var(--green-text); border: 0.5px solid var(--green-border); }
-    .btn-lose { background: var(--red-bg); color: var(--red-text); border: 0.5px solid var(--red-border); }
-    .btn-start { background: var(--blue-bg); color: var(--blue-text); border: 0.5px solid var(--blue-border); font-size: 17px; padding: 18px; }
-    .btn-neutral { background: var(--bg2); color: var(--text); border: 0.5px solid var(--border2); }
-
-    /* Bet history */
-    .bh-row { display: flex; align-items: center; gap: 10px; padding: 11px 0; border-bottom: 0.5px solid var(--border); }
-    .bh-row:last-child { border-bottom: none; }
-    .bh-num { font-size: 11px; color: var(--text3); width: 16px; text-align: center; }
-    .bh-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-    .bh-dot.win { background: #639922; }
-    .bh-dot.lose { background: #E24B4A; }
-    .bh-odds { font-size: 15px; font-weight: 600; width: 48px; }
-    .bh-stake { font-size: 13px; color: var(--text2); flex: 1; }
-    .bh-accum { font-size: 13px; color: var(--text2); }
-    .bh-accum.win { color: var(--green-text); }
-    .bh-accum.lose { color: var(--red-text); }
-
-    /* Divider */
-    .divider { height: 0.5px; background: var(--border); margin: 16px 0; }
-
-    /* Result screen */
-    .result-hero { text-align: center; padding: 2.5rem 0 1.5rem; }
-    .rh-icon { font-size: 56px; margin-bottom: 12px; }
-    .rh-title { font-size: 26px; font-weight: 700; margin-bottom: 6px; }
-    .rh-sub { font-size: 14px; color: var(--text2); }
-    .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 1.5rem 0; }
-    .rg-cell { background: var(--bg2); border-radius: var(--radius-sm); padding: 14px; text-align: center; }
-    .rg-label { font-size: 11px; color: var(--text2); }
-    .rg-val { font-size: 22px; font-weight: 700; margin-top: 4px; }
-    .rg-val.green { color: var(--green-text); }
-    .rg-val.red { color: var(--red-text); }
-
-    /* Phase summary rows */
-    .ph-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 0.5px solid var(--border); }
-    .ph-row:last-child { border-bottom: none; }
-    .ph-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-    .ph-dot.done { background: #639922; }
-    .ph-dot.lost { background: #E24B4A; }
-    .ph-dot.pending { background: var(--text3); }
-    .ph-name { font-size: 15px; font-weight: 500; flex: 1; }
-    .ph-detail { font-size: 13px; color: var(--text2); }
-    .ph-detail.done { color: var(--green-text); }
-    .ph-detail.lost { color: var(--red-text); }
-
-    /* Splash / install hint */
-    .install-hint { font-size: 12px; color: var(--text3); text-align: center; padding: 8px 0 0; }
-
-    .empty-hist { font-size: 13px; color: var(--text3); padding: 8px 0; }
+    @media(prefers-color-scheme:dark){:root{
+      --bg:#1c1c1e;--bg2:#2c2c2e;--bg3:#3a3a3c;
+      --text:#f5f5f5;--text2:#a0a09d;--text3:#6b6b68;
+      --border:rgba(255,255,255,0.12);--border2:rgba(255,255,255,0.22);
+      --blue-bg:#0c2a4a;--blue-b:#1a4a7a;--blue:#85B7EB;--blue-mid:#378ADD;
+      --green-bg:#1a2e0a;--green-b:#2d5a12;--green:#97C459;
+      --red-bg:#2e0a0a;--red-b:#5a1212;--red:#F09595;
+      --amber-bg:#2e1e04;--amber-b:#633806;--amber:#FAC775;
+    }}
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+    html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+    body{padding-top:var(--safe-top);padding-bottom:var(--safe-bot);overscroll-behavior:none;}
+    #app{max-width:480px;margin:0 auto;padding:0 16px;}
+    .screen{display:none;padding-bottom:3rem;}
+    .screen.active{display:block;}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 0 14px;}
+    .topbar-title{font-size:20px;font-weight:600;}
+    .topbar-sub{font-size:12px;color:var(--text2);margin-top:1px;}
+    .back-btn{font-size:14px;color:var(--blue-mid);background:none;border:none;cursor:pointer;padding:4px 0;}
+    .card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r);padding:16px 18px;margin-bottom:10px;}
+    .sec-label{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;}
+    .field{margin-bottom:14px;}.field:last-child{margin-bottom:0;}
+    .field-label{font-size:13px;color:var(--text2);margin-bottom:6px;}
+    .field-row{display:flex;align-items:center;gap:10px;}
+    .field-row input{flex:1;font-size:18px;font-weight:500;text-align:right;border:0.5px solid var(--border2);border-radius:var(--rs);padding:10px 12px;background:var(--bg2);color:var(--text);-webkit-appearance:none;}
+    .field-row input:focus{outline:none;border-color:var(--blue-mid);}
+    .field-unit{font-size:14px;color:var(--text2);min-width:20px;}
+    .steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin-bottom:14px;}
+    .step-dot{border:0.5px solid var(--border);border-radius:var(--rs);padding:8px 4px;text-align:center;}
+    .step-dot.active{border-color:var(--blue-mid);background:var(--blue-bg);}
+    .step-dot.done{background:var(--green-bg);border-color:var(--green-b);}
+    .step-dot.lost{background:var(--red-bg);border-color:var(--red-b);}
+    .sd-num{font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.04em;}
+    .step-dot.active .sd-num{color:var(--blue-mid);}
+    .step-dot.done .sd-num{color:var(--green);}
+    .step-dot.lost .sd-num{color:var(--red);}
+    .sd-phase{font-size:9px;color:var(--text3);margin-top:1px;}
+    .step-dot.active .sd-phase{color:var(--blue-mid);}
+    .step-dot.done .sd-phase{color:var(--green);}
+    .step-dot.lost .sd-phase{color:var(--red);}
+    .sd-val{font-size:12px;font-weight:600;color:var(--text);margin-top:2px;}
+    .step-dot.active .sd-val{color:var(--blue);}
+    .step-dot.done .sd-val{color:var(--green);}
+    .step-dot.lost .sd-val{color:var(--red);}
+    .ring-wrap{display:flex;justify-content:center;padding:6px 0 14px;}
+    .ring-inner{position:relative;width:160px;height:160px;}
+    .ring-inner svg{width:160px;height:160px;}
+    .ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+    .ring-pct{font-size:32px;font-weight:700;}
+    .ring-note{font-size:11px;color:var(--text2);margin-top:2px;text-align:center;padding:0 12px;}
+    .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+    .mini-stat{background:var(--bg2);border-radius:var(--rs);padding:12px 14px;}
+    .ms-label{font-size:11px;color:var(--text2);}
+    .ms-val{font-size:19px;font-weight:600;margin-top:2px;}
+    .next-action{background:var(--blue-bg);border:0.5px solid var(--blue-b);border-radius:var(--r);padding:16px 18px;margin-bottom:10px;}
+    .na-label{font-size:11px;font-weight:600;color:var(--blue-mid);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
+    .na-amount{font-size:36px;font-weight:700;color:var(--blue);line-height:1;}
+    .na-sub{font-size:13px;color:var(--blue-mid);margin-top:6px;line-height:1.4;}
+    .retention-box{background:var(--amber-bg);border:0.5px solid var(--amber-b);border-radius:var(--r);padding:12px 16px;margin-bottom:10px;}
+    .rb-label{font-size:11px;font-weight:600;color:var(--amber);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;}
+    .rb-text{font-size:13px;color:var(--amber);line-height:1.5;}
+    .add-bet{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r);padding:16px 18px;margin-bottom:10px;}
+    .add-bet-label{font-size:13px;color:var(--text2);margin-bottom:10px;}
+    .odds-input-wrap input{width:100%;font-size:28px;font-weight:700;text-align:center;border:0.5px solid var(--border2);border-radius:var(--rs);padding:12px;background:var(--bg2);color:var(--text);-webkit-appearance:none;}
+    .odds-input-wrap input:focus{outline:none;border-color:var(--blue-mid);}
+    .quick-odds{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+    .qo-btn{font-size:13px;font-weight:500;padding:7px 14px;border:0.5px solid var(--border2);border-radius:20px;background:var(--bg2);color:var(--text);cursor:pointer;}
+    .qo-btn:active{transform:scale(0.95);}
+    .qo-btn.hl{border-color:var(--blue-mid);background:var(--blue-bg);color:var(--blue);}
+    .action-btn{width:100%;padding:16px;font-size:16px;font-weight:600;border-radius:var(--r);cursor:pointer;border:none;margin-bottom:8px;}
+    .action-btn:active{transform:scale(0.98);}
+    .btn-win{background:var(--green-bg);color:var(--green);border:0.5px solid var(--green-b);}
+    .btn-lose{background:var(--red-bg);color:var(--red);border:0.5px solid var(--red-b);}
+    .btn-start{background:var(--blue-bg);color:var(--blue);border:0.5px solid var(--blue-b);font-size:17px;padding:18px;}
+    .btn-neutral{background:var(--bg2);color:var(--text);border:0.5px solid var(--border2);}
+    .bh-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:0.5px solid var(--border);}
+    .bh-row:last-child{border-bottom:none;}
+    .bh-apuesta{font-size:10px;color:var(--text3);min-width:20px;text-align:center;}
+    .bh-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+    .bh-dot.win{background:#639922;}.bh-dot.lose{background:#E24B4A;}
+    .bh-odds{font-size:15px;font-weight:600;width:46px;}
+    .bh-stake{font-size:13px;color:var(--text2);flex:1;}
+    .bh-result{font-size:12px;}
+    .bh-result.win{color:var(--green);}.bh-result.lose{color:var(--red);}
+    .divider{height:0.5px;background:var(--border);margin:14px 0;}
+    .result-hero{text-align:center;padding:2rem 0 1.5rem;}
+    .rh-icon{font-size:52px;margin-bottom:12px;}
+    .rh-title{font-size:24px;font-weight:700;margin-bottom:6px;}
+    .rh-sub{font-size:14px;color:var(--text2);}
+    .result-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:1.5rem 0;}
+    .rg-cell{background:var(--bg2);border-radius:var(--rs);padding:14px;text-align:center;}
+    .rg-label{font-size:11px;color:var(--text2);}
+    .rg-val{font-size:20px;font-weight:700;margin-top:4px;}
+    .rg-val.green{color:var(--green);}.rg-val.red{color:var(--red);}
+    .ph-row{display:flex;align-items:flex-start;gap:12px;padding:11px 0;border-bottom:0.5px solid var(--border);}
+    .ph-row:last-child{border-bottom:none;}
+    .ph-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+    .ph-dot.done{background:#639922;}.ph-dot.lost{background:#E24B4A;}.ph-dot.skip{background:var(--text3);}
+    .ph-name{font-size:14px;font-weight:500;flex:1;}
+    .ph-detail{font-size:12px;color:var(--text2);margin-top:2px;}
+    .ph-detail.done{color:var(--green);}.ph-detail.lost{color:var(--red);}
+    .empty-hist{font-size:13px;color:var(--text3);padding:8px 0;}
   </style>
 </head>
 <body>
 <div id="app">
 
-  <!-- SETUP SCREEN -->
-  <div id="screen-setup" class="screen active">
+  <div id="screen-home" class="screen active">
     <div class="topbar">
-      <div>
-        <div class="topbar-title">Método 3×4</div>
-        <div class="topbar-sub">Cuotas acumuladas por fase</div>
-      </div>
+      <div><div class="topbar-title">Método 3×4</div><div class="topbar-sub">Selecciona un reto</div></div>
     </div>
-
-    <div class="card">
-      <div class="sec-label">Stake</div>
-      <div class="field">
-        <div class="field-label">Unidad de apuesta</div>
-        <div class="field-row">
-          <input type="number" id="cfg-stake" value="10" min="1" step="1" inputmode="decimal"/>
-          <span class="field-unit">€</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="sec-label">Objetivo cuota acumulada por fase</div>
-      <div class="field">
-        <div class="field-label">Fase 1</div>
-        <div class="field-row">
-          <input type="number" id="cfg-t1" value="2.15" min="1.01" step="0.01" inputmode="decimal"/>
-          <span class="field-unit">×</span>
-        </div>
-      </div>
-      <div class="field">
-        <div class="field-label">Fase 2</div>
-        <div class="field-row">
-          <input type="number" id="cfg-t2" value="2.12" min="1.01" step="0.01" inputmode="decimal"/>
-          <span class="field-unit">×</span>
-        </div>
-      </div>
-      <div class="field">
-        <div class="field-label">Fase 3</div>
-        <div class="field-row">
-          <input type="number" id="cfg-t3" value="2.16" min="1.01" step="0.01" inputmode="decimal"/>
-          <span class="field-unit">×</span>
-        </div>
-      </div>
-    </div>
-
-    <button class="action-btn btn-start" onclick="startSession()">Empezar sesión →</button>
-    <div class="install-hint" id="install-hint"></div>
+    <div id="home-sessions"></div>
   </div>
 
-  <!-- PLAY SCREEN -->
-  <div id="screen-play" class="screen">
+  <div id="screen-setup" class="screen">
     <div class="topbar">
-      <button class="back-btn" onclick="goSetup()">← Nueva sesión</button>
-      <div style="text-align:right;">
-        <div class="topbar-title" id="play-title">Fase 1</div>
-        <div class="topbar-sub" id="play-sub">0 apuestas</div>
+      <button class="back-btn" onclick="goHome()">← Inicio</button>
+      <div style="text-align:right;"><div class="topbar-title" id="setup-title">Reto 1</div><div class="topbar-sub">Configura la sesión</div></div>
+    </div>
+    <div class="card">
+      <div class="sec-label">Stake inicial</div>
+      <div class="field">
+        <div class="field-label">Unidad de apuesta</div>
+        <div class="field-row"><input type="number" id="cfg-stake" value="10" min="1" step="1" inputmode="decimal"/><span class="field-unit">€</span></div>
       </div>
     </div>
+    <div class="card">
+      <div class="sec-label">Objetivo cuota acumulada por combinada</div>
+      <div class="field">
+        <div class="field-label">Apuesta 1 · Fase 1 <span style="color:var(--amber);font-size:11px;">(retención stake al ganar)</span></div>
+        <div class="field-row"><input type="number" id="cfg-t1" value="2.15" min="1.01" step="0.01" inputmode="decimal"/><span class="field-unit">×</span></div>
+      </div>
+      <div class="field">
+        <div class="field-label">Apuesta 2 · Fase 2a</div>
+        <div class="field-row"><input type="number" id="cfg-t2" value="2.12" min="1.01" step="0.01" inputmode="decimal"/><span class="field-unit">×</span></div>
+      </div>
+      <div class="field">
+        <div class="field-label">Apuesta 3 · Fase 2b <span style="color:var(--amber);font-size:11px;">(retención stake al ganar)</span></div>
+        <div class="field-row"><input type="number" id="cfg-t3" value="2.13" min="1.01" step="0.01" inputmode="decimal"/><span class="field-unit">×</span></div>
+      </div>
+      <div class="field">
+        <div class="field-label">Apuesta 4 · Fase 3</div>
+        <div class="field-row"><input type="number" id="cfg-t4" value="2.16" min="1.01" step="0.01" inputmode="decimal"/><span class="field-unit">×</span></div>
+      </div>
+    </div>
+    <button class="action-btn btn-start" onclick="startSession()">Empezar reto →</button>
+  </div>
 
-    <div class="phase-tabs" id="phase-tabs"></div>
-
+  <div id="screen-play" class="screen">
+    <div class="topbar">
+      <button class="back-btn" onclick="goHome()">← Inicio</button>
+      <div style="text-align:right;"><div class="topbar-title" id="play-title">Apuesta 1</div><div class="topbar-sub" id="play-sub">Fase 1</div></div>
+    </div>
+    <div class="steps" id="step-indicators"></div>
     <div class="ring-wrap">
       <div class="ring-inner">
-        <svg viewBox="0 0 170 170" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="85" cy="85" r="70" fill="none" stroke="var(--border)" stroke-width="10"/>
-          <circle id="ring-progress" cx="85" cy="85" r="70" fill="none" stroke="var(--blue-mid)" stroke-width="10"
-            stroke-linecap="round" stroke-dasharray="439.8" stroke-dashoffset="439.8"
-            transform="rotate(-90 85 85)" style="transition:stroke-dashoffset .4s ease;"/>
+        <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="80" cy="80" r="66" fill="none" stroke="var(--border)" stroke-width="10"/>
+          <circle id="ring-progress" cx="80" cy="80" r="66" fill="none" stroke="var(--blue-mid)" stroke-width="10"
+            stroke-linecap="round" stroke-dasharray="414.7" stroke-dashoffset="414.7"
+            transform="rotate(-90 80 80)" style="transition:stroke-dashoffset .4s ease;"/>
         </svg>
         <div class="ring-center">
           <div class="ring-pct" id="ring-pct">0%</div>
-          <div class="ring-note" id="ring-note">completado</div>
+          <div class="ring-note" id="ring-note"></div>
         </div>
       </div>
     </div>
-
     <div class="row2">
       <div class="mini-stat"><div class="ms-label">Acumulado</div><div class="ms-val" id="ms-accum">1.000×</div></div>
       <div class="mini-stat"><div class="ms-label">Objetivo</div><div class="ms-val" id="ms-target">2.15×</div></div>
-      <div class="mini-stat"><div class="ms-label">Faltan</div><div class="ms-val" id="ms-remaining">1.150×</div></div>
-      <div class="mini-stat"><div class="ms-label">Apuestas</div><div class="ms-val" id="ms-bets">0</div></div>
+      <div class="mini-stat"><div class="ms-label">Faltan</div><div class="ms-val" id="ms-remaining">1.15×</div></div>
+      <div class="mini-stat"><div class="ms-label">Sub-apuesta</div><div class="ms-val" id="ms-bets">0</div></div>
     </div>
-
-    <div class="next-action" id="next-action-box">
-      <div class="na-label">Próxima apuesta</div>
+    <div class="next-action">
+      <div class="na-label">Próxima sub-apuesta</div>
       <div class="na-amount" id="na-amount">10.00 €</div>
-      <div class="na-sub" id="na-sub">Apuesta 1 — stake inicial</div>
+      <div class="na-sub" id="na-sub"></div>
     </div>
-
+    <div class="retention-box" id="retention-box" style="display:none;">
+      <div class="rb-label">⚠ Retención al completar esta combinada</div>
+      <div class="rb-text" id="rb-text"></div>
+    </div>
     <div class="add-bet">
       <div class="add-bet-label">¿A qué cuota has apostado?</div>
-      <div class="odds-input-wrap">
-        <input type="number" id="odds-input" placeholder="1.25" min="1.01" step="0.01" inputmode="decimal"/>
-      </div>
+      <div class="odds-input-wrap"><input type="number" id="odds-input" placeholder="1.25" min="1.01" step="0.01" inputmode="decimal"/></div>
       <div class="quick-odds" id="quick-odds"></div>
     </div>
-
-    <button class="action-btn btn-win" onclick="resolveCurrentBet(true)">✓ &nbsp;Apuesta ganada</button>
-    <button class="action-btn btn-lose" onclick="resolveCurrentBet(false)">✗ &nbsp;Apuesta perdida</button>
-
+    <button class="action-btn btn-win" onclick="resolveCurrentBet(true)">✓ &nbsp;Sub-apuesta ganada</button>
+    <button class="action-btn btn-lose" onclick="resolveCurrentBet(false)">✗ &nbsp;Sub-apuesta perdida</button>
     <div class="divider"></div>
-    <div class="sec-label">Historial de esta fase</div>
+    <div class="sec-label">Historial de esta combinada</div>
     <div id="bet-history"></div>
   </div>
 
-  <!-- RESULT SCREEN -->
   <div id="screen-result" class="screen">
+    <div class="topbar"><button class="back-btn" onclick="goHome()">← Inicio</button></div>
     <div class="result-hero">
       <div class="rh-icon" id="res-icon">🏆</div>
-      <div class="rh-title" id="res-title">¡Completado!</div>
+      <div class="rh-title" id="res-title"></div>
       <div class="rh-sub" id="res-sub"></div>
     </div>
     <div class="result-grid" id="result-grid"></div>
-    <div class="sec-label">Resumen por fases</div>
+    <div class="sec-label">Detalle por combinada</div>
     <div id="result-phases" class="card" style="padding:4px 18px;"></div>
-    <button class="action-btn btn-neutral" onclick="goSetup()" style="margin-top:14px;">Nueva sesión</button>
+    <button class="action-btn btn-neutral" onclick="resetCurrentSession()" style="margin-top:14px;">Nuevo reto aquí</button>
+    <button class="action-btn btn-neutral" onclick="goHome()">Volver al inicio</button>
   </div>
 
 </div>
-
 <script>
-var S = { stake:10, targets:[2.15,2.12,2.16], phases:[], curPhase:0 };
-var CIRC = 2*Math.PI*70;
+var SESSIONS=[{},{}];
+var CUR=0;
+var CIRC=2*Math.PI*66;
 
-function showScreen(n) {
-  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
-  document.getElementById('screen-'+n).classList.add('active');
-  window.scrollTo(0,0);
+function emptySession(name){
+  return{name:name,started:false,stake:10,targets:[2.15,2.12,2.13,2.16],
+    combinadas:[
+      {bets:[],accum:1,status:'pending',gross:null,net:null},
+      {bets:[],accum:1,status:'pending',gross:null,net:null},
+      {bets:[],accum:1,status:'pending',gross:null,net:null},
+      {bets:[],accum:1,status:'pending',gross:null,net:null}
+    ],curComb:0,result:null};
 }
-function goSetup(){ showScreen('setup'); }
+
+function phaseLabel(i){return['Fase 1','Fase 2a','Fase 2b','Fase 3'][i];}
+
+function retention(si,ci){
+  var s=SESSIONS[si];
+  return(ci===0||ci===2)?s.stake:0;
+}
+
+function stakeForComb(si,ci){
+  var s=SESSIONS[si];
+  if(ci===0) return s.stake;
+  if(ci===1) return s.combinadas[0].net!==null?s.combinadas[0].net:s.stake;
+  if(ci===2) return s.combinadas[1].gross!==null?s.combinadas[1].gross:s.stake;
+  if(ci===3) return s.combinadas[2].net!==null?s.combinadas[2].net:s.stake;
+  return s.stake;
+}
+
+function save(){try{localStorage.setItem('m3x4v3',JSON.stringify(SESSIONS));}catch(e){}}
+function load(){try{var d=localStorage.getItem('m3x4v3');if(d){SESSIONS=JSON.parse(d);return true;}}catch(e){}return false;}
+
+function show(n){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});document.getElementById('screen-'+n).classList.add('active');window.scrollTo(0,0);}
+
+function goHome(){renderHome();show('home');}
+
+function renderHome(){
+  var html='';
+  SESSIONS.forEach(function(s,i){
+    var st=!s.started?'Sin sesión activa':(s.result==='won'?'Completado 🏆':(s.result==='lost'?'Perdida ✗':'En curso · Combinada '+(s.curComb+1)+' de 4'));
+    var sc=!s.started?'var(--text3)':(s.result==='won'?'var(--green)':(s.result==='lost'?'var(--red)':'var(--blue-mid)'));
+    var earned='';
+    if(s.started&&s.result==='won') earned='+'+((s.combinadas[3].gross||0)-s.stake).toFixed(2)+' €';
+    else if(s.started&&s.result==='lost') earned='−'+s.stake.toFixed(2)+' €';
+    var earnCol=s.result==='won'?'var(--green)':s.result==='lost'?'var(--red)':'';
+
+    html+='<div class="card" style="cursor:pointer;" onclick="selectSess('+i+')">'
+      +'<div style="display:flex;align-items:center;gap:14px;">'
+      +'<div style="width:42px;height:42px;border-radius:50%;background:var(--blue-bg);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:var(--blue);flex-shrink:0;">'+(i+1)+'</div>'
+      +'<div style="flex:1;"><div style="font-size:16px;font-weight:600;">'+(s.name||'Reto '+(i+1))+'</div>'
+      +'<div style="font-size:13px;color:'+sc+';margin-top:2px;">'+st+'</div></div>'
+      +(earned?'<div style="font-size:18px;font-weight:700;color:'+earnCol+'">'+earned+'</div>':'')
+      +'<div style="font-size:20px;color:var(--text3);">›</div>'
+      +'</div>'
+      +(s.started&&!s.result?miniProgress(i):'')
+      +'</div>';
+  });
+  document.getElementById('home-sessions').innerHTML=html;
+}
+
+function miniProgress(si){
+  var s=SESSIONS[si];
+  var ci=s.curComb;
+  var c=s.combinadas[ci];
+  var t=s.targets[ci];
+  var pct=Math.min(100,Math.max(0,((c.accum-1)/(t-1))*100));
+  var next=(stakeForComb(si,ci)*c.accum).toFixed(2);
+  return '<div style="margin-top:12px;border-top:0.5px solid var(--border);padding-top:12px;">'
+    +'<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-bottom:6px;">'
+    +'<span>Combinada '+(ci+1)+' — '+phaseLabel(ci)+' · '+c.accum.toFixed(3)+'×</span><span>objetivo '+t.toFixed(2)+'×</span></div>'
+    +'<div style="background:var(--bg2);border-radius:4px;height:4px;overflow:hidden;">'
+    +'<div style="height:4px;border-radius:4px;background:var(--blue-mid);width:'+pct.toFixed(1)+'%;"></div></div>'
+    +'<div style="font-size:12px;color:var(--blue-mid);margin-top:8px;">Próxima sub-apuesta: <strong>'+next+' €</strong>'
+    +(retention(si,ci)>0?' · <span style="color:var(--amber);">retención '+s.stake.toFixed(0)+' € al completar</span>':'')
+    +'</div></div>';
+}
+
+function selectSess(i){
+  CUR=i;
+  var s=SESSIONS[i];
+  if(!s.started){goSetup(i);return;}
+  if(s.result){renderResult();show('result');return;}
+  renderPlay();show('play');
+}
+
+function goSetup(i){
+  CUR=i;
+  var s=SESSIONS[i];
+  document.getElementById('setup-title').textContent='Reto '+(i+1);
+  document.getElementById('cfg-stake').value=s.stake||10;
+  if(s.targets){
+    document.getElementById('cfg-t1').value=s.targets[0]||2.15;
+    document.getElementById('cfg-t2').value=s.targets[1]||2.12;
+    document.getElementById('cfg-t3').value=s.targets[2]||2.13;
+    document.getElementById('cfg-t4').value=s.targets[3]||2.16;
+  }
+  show('setup');
+}
 
 function startSession(){
-  S.stake = parseFloat(document.getElementById('cfg-stake').value)||10;
-  S.targets = [
+  var n='Reto '+(CUR+1);
+  SESSIONS[CUR]=emptySession(n);
+  SESSIONS[CUR].stake=parseFloat(document.getElementById('cfg-stake').value)||10;
+  SESSIONS[CUR].targets=[
     parseFloat(document.getElementById('cfg-t1').value)||2.15,
     parseFloat(document.getElementById('cfg-t2').value)||2.12,
-    parseFloat(document.getElementById('cfg-t3').value)||2.16
+    parseFloat(document.getElementById('cfg-t3').value)||2.13,
+    parseFloat(document.getElementById('cfg-t4').value)||2.16
   ];
-  S.phases = [
-    {bets:[],accum:1,status:'active',finalStake:null},
-    {bets:[],accum:1,status:'pending',finalStake:null},
-    {bets:[],accum:1,status:'pending',finalStake:null}
-  ];
-  S.curPhase = 0;
-  saveState();
-  renderPlay();
-  showScreen('play');
+  SESSIONS[CUR].started=true;
+  SESSIONS[CUR].combinadas[0].status='active';
+  save();renderPlay();show('play');
 }
 
-function phaseStake(i){
-  if(i===0) return S.stake;
-  var p = S.phases[i-1];
-  return p && p.finalStake ? p.finalStake : S.stake;
-}
-
-function saveState(){ try{ localStorage.setItem('m3x4',JSON.stringify(S)); }catch(e){} }
-function loadState(){
-  try{
-    var d = localStorage.getItem('m3x4');
-    if(d){ S = JSON.parse(d); return true; }
-  }catch(e){}
-  return false;
+function resetCurrentSession(){
+  SESSIONS[CUR]=emptySession('Reto '+(CUR+1));
+  save();goSetup(CUR);
 }
 
 function renderPlay(){
-  var ph = S.curPhase;
-  var phase = S.phases[ph];
-  var target = S.targets[ph];
-  var pct = Math.min(100, ((phase.accum-1)/(target-1))*100);
-  var remaining = parseFloat((target/phase.accum).toFixed(4));
-  var stakeNow = parseFloat((phaseStake(ph)*phase.accum).toFixed(2));
+  var s=SESSIONS[CUR];
+  var ci=s.curComb;
+  var c=s.combinadas[ci];
+  var t=s.targets[ci];
+  var sk=stakeForComb(CUR,ci);
+  var now=parseFloat((sk*c.accum).toFixed(2));
+  var pct=Math.min(100,Math.max(0,((c.accum-1)/(t-1))*100));
+  var rem=parseFloat((t/c.accum).toFixed(4));
+  var ret=retention(CUR,ci);
 
-  document.getElementById('play-title').textContent = 'Fase '+(ph+1);
-  document.getElementById('play-sub').textContent = phase.bets.length+' apuesta'+(phase.bets.length!==1?'s':'')+' en esta fase';
+  document.getElementById('play-title').textContent='Combinada '+(ci+1)+' de 4';
+  document.getElementById('play-sub').textContent=phaseLabel(ci)+' · '+s.name;
 
-  var tabs = '';
-  S.phases.forEach(function(p,i){
-    var st = p.status;
-    var isCur = i === ph;
-    var label = st==='pending'?'—':(st==='active'?p.accum.toFixed(3)+'×':(st==='done'?p.accum.toFixed(3)+'×':'Perdida'));
-    tabs += '<div class="phase-tab '+st+(isCur?' active':'')+'" onclick="switchPhase('+i+')">'
-      +'<div class="pt-num">FASE '+(i+1)+'</div>'
-      +'<div class="pt-val">'+label+'</div>'
-      +'</div>';
+  var sh='';
+  s.combinadas.forEach(function(cm,i){
+    var st=cm.status;
+    var cur=i===ci;
+    var v=st==='pending'?'—':(st==='active'?cm.accum.toFixed(3)+'×':(st==='done'?'✓':'✗'));
+    sh+='<div class="step-dot '+(cur?'active':(st==='done'?'done':(st==='lost'?'lost':'')))+'"><div class="sd-num">COMB '+(i+1)+'</div><div class="sd-phase">'+phaseLabel(i)+'</div><div class="sd-val">'+v+'</div></div>';
   });
-  document.getElementById('phase-tabs').innerHTML = tabs;
+  document.getElementById('step-indicators').innerHTML=sh;
 
-  var dashoffset = CIRC-(CIRC*(Math.max(0,pct)/100));
-  document.getElementById('ring-progress').setAttribute('stroke-dashoffset', dashoffset.toFixed(2));
-  document.getElementById('ring-pct').textContent = Math.round(pct)+'%';
-  document.getElementById('ring-note').textContent = 'hacia '+target.toFixed(2)+'×';
+  var off=CIRC-(CIRC*(pct/100));
+  document.getElementById('ring-progress').setAttribute('stroke-dashoffset',off.toFixed(2));
+  document.getElementById('ring-pct').textContent=Math.round(pct)+'%';
+  document.getElementById('ring-note').textContent='hacia '+t.toFixed(2)+'×';
 
-  document.getElementById('ms-accum').textContent = phase.accum.toFixed(3)+'×';
-  document.getElementById('ms-target').textContent = target.toFixed(2)+'×';
-  document.getElementById('ms-remaining').textContent = remaining.toFixed(3)+'×';
-  document.getElementById('ms-bets').textContent = phase.bets.length;
+  document.getElementById('ms-accum').textContent=c.accum.toFixed(3)+'×';
+  document.getElementById('ms-target').textContent=t.toFixed(2)+'×';
+  document.getElementById('ms-remaining').textContent=rem.toFixed(3)+'×';
+  document.getElementById('ms-bets').textContent=c.bets.length;
 
-  document.getElementById('na-amount').textContent = stakeNow.toFixed(2)+' €';
-  document.getElementById('na-sub').textContent = 'Apuesta '+(phase.bets.length+1)+' · acum. '+phase.accum.toFixed(3)+'×';
+  document.getElementById('na-amount').textContent=now.toFixed(2)+' €';
+  var subLabels=['Stake inicial','Neto comb.1 reinvertido','Bruto comb.2 reinvertido','Neto comb.3 reinvertido'];
+  document.getElementById('na-sub').textContent=subLabels[ci]+' · sub-apuesta '+(c.bets.length+1);
 
-  var qOdds = [1.15,1.20,1.25,1.30,1.35,1.40,1.45,1.50];
-  var qhtml = '';
+  var retBox=document.getElementById('retention-box');
+  if(ret>0){
+    retBox.style.display='';
+    var pb=(sk*t).toFixed(2);
+    var pn=(sk*t-ret).toFixed(2);
+    document.getElementById('rb-text').innerHTML='Al completar se retienen <strong>'+ret.toFixed(2)+' €</strong> (stake inicial a salvo).<br>Bruto estimado: ~'+pb+' € &rarr; Pasa siguiente: ~'+pn+' €';
+  }else{retBox.style.display='none';}
+
+  var qOdds=[1.15,1.20,1.25,1.30,1.35,1.40,1.45,1.50];
+  var qh='';
   qOdds.forEach(function(o){
-    var hl = (o >= remaining - 0.005 && o <= remaining + 0.3);
-    qhtml += '<button class="qo-btn'+(hl?' highlight':'')+'" onclick="setOdds('+o+')">'+o.toFixed(2)+'</button>';
+    var hl=o>=(rem-0.005)&&o<=(rem+0.35);
+    qh+='<button class="qo-btn'+(hl?' hl':'')+'" onclick="setOdds('+o+')">'+o.toFixed(2)+'</button>';
   });
-  document.getElementById('quick-odds').innerHTML = qhtml;
+  document.getElementById('quick-odds').innerHTML=qh;
 
-  var hist = '';
-  if(phase.bets.length===0){
-    hist = '<div class="empty-hist">Ninguna apuesta registrada aún.</div>';
-  } else {
-    var running = 1;
-    phase.bets.forEach(function(b,i){
-      var stk = (phaseStake(ph)*running).toFixed(2);
-      var accumBefore = running.toFixed(3);
-      if(b.win) running = parseFloat((running*b.odds).toFixed(6));
-      var accumAfter = b.win ? running.toFixed(3) : '—';
-      hist += '<div class="bh-row">'
-        +'<div class="bh-num">'+(i+1)+'</div>'
-        +'<div class="bh-dot '+(b.win?'win':'lose')+'"></div>'
-        +'<div class="bh-odds">'+b.odds.toFixed(2)+'×</div>'
-        +'<div class="bh-stake">'+stk+' € apostado</div>'
-        +'<div class="bh-accum '+(b.win?'win':'lose')+'">'+(b.win?accumAfter+'×':'perdida')+'</div>'
-        +'</div>';
+  var hist='';
+  if(c.bets.length===0){hist='<div class="empty-hist">Ninguna sub-apuesta registrada.</div>';}
+  else{
+    var run=1;
+    c.bets.forEach(function(b,i){
+      var stk=(sk*run).toFixed(2);
+      if(b.win) run=parseFloat((run*b.odds).toFixed(6));
+      var after=b.win?run.toFixed(3)+'×':'perdida';
+      hist+='<div class="bh-row"><div class="bh-apuesta">'+(i+1)+'</div><div class="bh-dot '+(b.win?'win':'lose')+'"></div><div class="bh-odds">'+b.odds.toFixed(2)+'×</div><div class="bh-stake">'+stk+' € apostado</div><div class="bh-result '+(b.win?'win':'lose')+'">'+after+'</div></div>';
     });
   }
-  document.getElementById('bet-history').innerHTML = hist;
-
-  var canAct = phase.status==='active';
-  ['next-action-box','add-bet','btn-win','btn-lose'].forEach(function(id){
-    var el = document.getElementById(id) || document.querySelector('.'+id);
-    var target_el = document.getElementById(id);
-    if(target_el) target_el.style.display = canAct?'':'none';
-  });
-  document.querySelector('.add-bet').style.display = canAct?'':'none';
-  document.querySelector('.btn-win').style.display = canAct?'':'none';
-  document.querySelector('.btn-lose').style.display = canAct?'':'none';
-  document.getElementById('next-action-box').style.display = canAct?'':'none';
+  document.getElementById('bet-history').innerHTML=hist;
 }
 
-function switchPhase(i){
-  if(S.phases[i].status==='pending') return;
-  S.curPhase = i;
-  renderPlay();
-}
-
-function setOdds(o){
-  document.getElementById('odds-input').value = o.toFixed(2);
-  document.getElementById('odds-input').focus();
-}
+function setOdds(o){document.getElementById('odds-input').value=o.toFixed(2);document.getElementById('odds-input').focus();}
 
 function resolveCurrentBet(win){
-  var odds = parseFloat(document.getElementById('odds-input').value);
-  if(!odds || odds <= 1.01){
-    document.getElementById('odds-input').focus();
-    document.getElementById('odds-input').style.borderColor = '#E24B4A';
-    setTimeout(function(){ document.getElementById('odds-input').style.borderColor = ''; }, 1500);
-    return;
+  var odds=parseFloat(document.getElementById('odds-input').value);
+  if(!odds||odds<=1.01){
+    var inp=document.getElementById('odds-input');inp.focus();inp.style.borderColor='var(--red)';
+    setTimeout(function(){inp.style.borderColor='';},1500);return;
   }
-  var ph = S.curPhase;
-  var phase = S.phases[ph];
-  phase.bets.push({odds: parseFloat(odds.toFixed(2)), win: win});
-  document.getElementById('odds-input').value = '';
+  var s=SESSIONS[CUR];var ci=s.curComb;var c=s.combinadas[ci];
+  c.bets.push({odds:parseFloat(odds.toFixed(2)),win:win});
+  document.getElementById('odds-input').value='';
 
-  if(!win){
-    phase.status = 'lost';
-    saveState();
-    renderResultScreen('lost', ph);
-    showScreen('result');
-    return;
-  }
+  if(!win){c.status='lost';s.result='lost';save();renderResult();show('result');return;}
 
-  phase.accum = parseFloat((phase.accum*odds).toFixed(6));
-  var target = S.targets[ph];
+  c.accum=parseFloat((c.accum*odds).toFixed(6));
+  var t=s.targets[ci];
 
-  if(phase.accum >= target){
-    var gross = parseFloat((phaseStake(ph)*phase.accum).toFixed(2));
-    phase.finalStake = gross;
-    phase.status = 'done';
-    if(ph === 2){
-      saveState();
-      renderResultScreen('won', -1);
-      showScreen('result');
-    } else {
-      S.phases[ph+1].status = 'active';
-      S.curPhase = ph+1;
-      saveState();
-      renderPlay();
-    }
-  } else {
-    saveState();
-    renderPlay();
-  }
+  if(c.accum>=t){
+    var sk=stakeForComb(CUR,ci);
+    var gross=parseFloat((sk*c.accum).toFixed(2));
+    var ret=retention(CUR,ci);
+    var net=parseFloat((gross-ret).toFixed(2));
+    c.gross=gross;c.net=net;c.status='done';
+    if(ci===3){s.result='won';save();renderResult();show('result');}
+    else{s.combinadas[ci+1].status='active';s.curComb=ci+1;save();renderPlay();}
+  }else{save();renderPlay();}
 }
 
-function renderResultScreen(type, lostAt){
-  if(type==='won'){
-    document.getElementById('res-icon').textContent = '🏆';
-    document.getElementById('res-title').textContent = '¡Método completado!';
-    var gross = S.phases[2].finalStake;
-    var net = parseFloat((gross - S.stake).toFixed(2));
-    var mult = (gross/S.stake).toFixed(1);
-    document.getElementById('res-sub').textContent = 'Has multiplicado tu stake ×'+mult;
-    document.getElementById('result-grid').innerHTML =
-      '<div class="rg-cell"><div class="rg-label">Stake inicial</div><div class="rg-val">'+S.stake.toFixed(2)+' €</div></div>'
-      +'<div class="rg-cell"><div class="rg-label">Retorno total</div><div class="rg-val green">'+gross.toFixed(2)+' €</div></div>'
+function renderResult(){
+  var s=SESSIONS[CUR];
+  if(s.result==='won'){
+    var gross=s.combinadas[3].gross;
+    var net=parseFloat((gross-s.stake).toFixed(2));
+    document.getElementById('res-icon').textContent='🏆';
+    document.getElementById('res-title').textContent='¡Reto completado!';
+    document.getElementById('res-sub').textContent=s.name+' · ×'+(gross/s.stake).toFixed(1)+' tu stake';
+    document.getElementById('result-grid').innerHTML=
+      '<div class="rg-cell"><div class="rg-label">Stake inicial</div><div class="rg-val">'+s.stake.toFixed(2)+' €</div></div>'
+      +'<div class="rg-cell"><div class="rg-label">Retorno final</div><div class="rg-val green">'+gross.toFixed(2)+' €</div></div>'
       +'<div class="rg-cell"><div class="rg-label">Beneficio neto</div><div class="rg-val green">+'+net.toFixed(2)+' €</div></div>'
-      +'<div class="rg-cell"><div class="rg-label">Total apuestas</div><div class="rg-val">'+(S.phases[0].bets.length+S.phases[1].bets.length+S.phases[2].bets.length)+'</div></div>';
-  } else {
-    document.getElementById('res-icon').textContent = '✗';
-    document.getElementById('res-title').textContent = 'Fase '+(lostAt+1)+' perdida';
-    document.getElementById('res-sub').textContent = 'La cadena se rompió en la apuesta '+(S.phases[lostAt].bets.length)+' de la fase '+(lostAt+1);
-    document.getElementById('result-grid').innerHTML =
-      '<div class="rg-cell"><div class="rg-label">Stake perdido</div><div class="rg-val red">−'+S.stake.toFixed(2)+' €</div></div>'
-      +'<div class="rg-cell"><div class="rg-label">Apuestas hechas</div><div class="rg-val">'+(S.phases[0].bets.length+S.phases[1].bets.length+S.phases[2].bets.length)+'</div></div>';
+      +'<div class="rg-cell"><div class="rg-label">Sub-apuestas</div><div class="rg-val">'+(s.combinadas.reduce(function(a,c){return a+c.bets.length;},0))+'</div></div>';
+  }else{
+    var la=s.combinadas.findIndex(function(c){return c.status==='lost';});
+    document.getElementById('res-icon').textContent='✗';
+    document.getElementById('res-title').textContent='Reto perdido';
+    document.getElementById('res-sub').textContent=s.name+' · Caída en combinada '+(la+1)+' ('+phaseLabel(la)+')';
+    document.getElementById('result-grid').innerHTML=
+      '<div class="rg-cell"><div class="rg-label">Stake perdido</div><div class="rg-val red">−'+s.stake.toFixed(2)+' €</div></div>'
+      +'<div class="rg-cell"><div class="rg-label">Sub-apuestas</div><div class="rg-val">'+(s.combinadas.reduce(function(a,c){return a+c.bets.length;},0))+'</div></div>';
   }
-  var phHtml = '';
-  S.phases.forEach(function(p,i){
-    if(p.bets.length===0 && p.status==='pending') return;
-    var dotClass = p.status==='done'?'done':(p.status==='lost'?'lost':'pending');
-    var detail = p.status==='done'?('×'+p.accum.toFixed(3)+' → '+p.finalStake.toFixed(2)+' €'):(p.status==='lost'?'Perdida en apuesta '+p.bets.length:'En curso');
-    var detClass = p.status==='done'?'done':(p.status==='lost'?'lost':'');
-    phHtml += '<div class="ph-row"><div class="ph-dot '+dotClass+'"></div><div class="ph-name">Fase '+(i+1)+'</div><div class="ph-detail '+detClass+'">'+detail+'</div></div>';
+  var ph='';
+  s.combinadas.forEach(function(c,i){
+    if(c.status==='pending'&&c.bets.length===0) return;
+    var dc=c.status==='done'?'done':(c.status==='lost'?'lost':'skip');
+    var ret=retention(CUR,i);
+    var d=c.status==='done'
+      ?('×'+c.accum.toFixed(3)+' · bruto '+c.gross.toFixed(2)+'€'+(ret>0?' → −'+ret.toFixed(0)+'€ ret. → '+c.net.toFixed(2)+'€ al siguiente':''))
+      :(c.status==='lost'?'Perdida en sub-apuesta '+c.bets.length:'—');
+    ph+='<div class="ph-row"><div class="ph-dot '+dc+'"></div><div style="flex:1;"><div class="ph-name">Combinada '+(i+1)+' — '+phaseLabel(i)+'</div><div class="ph-detail '+dc+'">'+d+'</div></div></div>';
   });
-  document.getElementById('result-phases').innerHTML = phHtml || '<div class="empty-hist">Sin datos</div>';
+  document.getElementById('result-phases').innerHTML=ph||'<div class="empty-hist">—</div>';
 }
 
-window.addEventListener('load', function(){
-  if(loadState() && S.phases && S.phases.length && S.phases.some(function(p){ return p.status==='active'||p.status==='done'; })){
-    var allDone = S.phases.every(function(p){ return p.status==='done'||p.status==='pending'; });
-    var anyLost = S.phases.some(function(p){ return p.status==='lost'; });
-    if(allDone && S.phases[2].status==='done'){ renderResultScreen('won',-1); showScreen('result'); }
-    else if(anyLost){ var li=S.phases.findIndex(function(p){return p.status==='lost';}); renderResultScreen('lost',li); showScreen('result'); }
-    else { renderPlay(); showScreen('play'); }
+window.addEventListener('load',function(){
+  if(!load()||!Array.isArray(SESSIONS)||SESSIONS.length<2){
+    SESSIONS=[emptySession('Reto 1'),emptySession('Reto 2')];
   }
-  var hint = document.getElementById('install-hint');
-  var ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  var android = /android/i.test(navigator.userAgent);
-  if(ios && !window.navigator.standalone) hint.textContent = 'Toca Compartir → Añadir a pantalla de inicio para instalar';
-  else if(android) hint.textContent = 'Toca el menú del navegador → Añadir a pantalla de inicio';
-});
+  if(!SESSIONS[0].name) SESSIONS[0].name='Reto 1';
+  if(!SESSIONS[1].name) SESSIONS[1].name='Reto 2';
+  renderHome();show('home');
 
-window.addEventListener('beforeinstallprompt', function(e){
+  var ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  if(ios&&!window.navigator.standalone){
+    var p=document.createElement('p');
+    p.style.cssText='font-size:12px;color:var(--text3);text-align:center;padding:14px 0 0;';
+    p.textContent='Safari → Compartir → Añadir a pantalla de inicio';
+    document.getElementById('home-sessions').after(p);
+  }
+});
+window.addEventListener('beforeinstallprompt',function(e){
   e.preventDefault();
-  document.getElementById('install-hint').textContent = '';
-  var btn = document.createElement('button');
-  btn.className = 'action-btn btn-neutral';
-  btn.style.marginTop = '8px';
-  btn.textContent = 'Instalar app en este dispositivo';
-  btn.onclick = function(){ e.prompt(); };
-  document.getElementById('install-hint').parentNode.insertBefore(btn, document.getElementById('install-hint'));
+  var btn=document.createElement('button');
+  btn.className='action-btn btn-neutral';btn.style.marginTop='10px';
+  btn.textContent='Instalar app en este dispositivo';
+  btn.onclick=function(){e.prompt();};
+  document.getElementById('home-sessions').after(btn);
 });
-</script>
-
-<script>
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('sw.js').catch(function(){});
-}
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(function(){});
 </script>
 </body>
 </html>
