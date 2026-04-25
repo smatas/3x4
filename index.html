@@ -19,6 +19,7 @@
       --green-bg:#EAF3DE;--green-b:#C0DD97;--green:#27500A;
       --red-bg:#FCEBEB;--red-b:#F7C1C1;--red:#A32D2D;
       --amber-bg:#FAEEDA;--amber-b:#FAC775;--amber:#633806;
+      --purple-bg:#EEEDFE;--purple-b:#AFA9EC;--purple:#3C3489;
       --r:12px;--rs:8px;
       --safe-top:env(safe-area-inset-top,0px);
       --safe-bot:env(safe-area-inset-bottom,0px);
@@ -97,16 +98,16 @@
     .btn-win{background:var(--green-bg);color:var(--green);border:0.5px solid var(--green-b);}
     .btn-lose{background:var(--red-bg);color:var(--red);border:0.5px solid var(--red-b);}
     .btn-start{background:var(--blue-bg);color:var(--blue);border:0.5px solid var(--blue-b);font-size:17px;padding:18px;}
-    .btn-neutral{background:var(--bg2);color:var(--text);border:0.5px solid var(--border2);}
+    .btn-neutral{background:var(--bg2);color:var(--text);border:0.5px solid var(--border2);}.btn-play{background:var(--amber-bg);color:var(--amber);border:0.5px solid var(--amber-b);}.bh-row.inplay{background:var(--amber-bg);border-radius:var(--rs);padding:11px 10px;margin:0 -8px;}
     .bh-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:0.5px solid var(--border);}
     .bh-row:last-child{border-bottom:none;}
     .bh-apuesta{font-size:10px;color:var(--text3);min-width:20px;text-align:center;}
     .bh-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-    .bh-dot.win{background:#639922;}.bh-dot.lose{background:#E24B4A;}
+    .bh-dot.win{background:#639922;}.bh-dot.lose{background:#E24B4A;}.bh-dot.play{background:#BA7517;}
     .bh-odds{font-size:15px;font-weight:600;width:46px;}
     .bh-stake{font-size:13px;color:var(--text2);flex:1;}
     .bh-result{font-size:12px;}
-    .bh-result.win{color:var(--green);}.bh-result.lose{color:var(--red);}
+    .bh-result.win{color:var(--green);}.bh-result.lose{color:var(--red);}.bh-result.play{color:var(--amber);}
     .divider{height:0.5px;background:var(--border);margin:14px 0;}
     .result-hero{text-align:center;padding:2rem 0 1.5rem;}
     .rh-icon{font-size:52px;margin-bottom:12px;}
@@ -213,6 +214,7 @@
     </div>
     <button class="action-btn btn-win" onclick="resolveCurrentBet(true)">✓ &nbsp;Sub-apuesta ganada</button>
     <button class="action-btn btn-lose" onclick="resolveCurrentBet(false)">✗ &nbsp;Sub-apuesta perdida</button>
+    <button class="action-btn btn-play" onclick="markInPlay()">⏳ &nbsp;En juego — pendiente de resultado</button>
     <div class="divider"></div>
     <div class="sec-label">Historial de esta combinada</div>
     <div id="bet-history"></div>
@@ -249,6 +251,7 @@ function emptySession(name){
 }
 
 function phaseLabel(i){return['Fase 1','Fase 2a','Fase 2b','Fase 3'][i];}
+function hasInPlay(si){var s=SESSIONS[si];if(!s.started||s.result) return false;var c=s.combinadas[s.curComb];return c.bets.some(function(b){return b.win===null;});}
 
 function retention(si,ci){
   var s=SESSIONS[si];
@@ -309,6 +312,7 @@ function miniProgress(si){
     +'<div style="height:4px;border-radius:4px;background:var(--blue-mid);width:'+pct.toFixed(1)+'%;"></div></div>'
     +'<div style="font-size:12px;color:var(--blue-mid);margin-top:8px;">Próxima sub-apuesta: <strong>'+next+' €</strong>'
     +(retention(si,ci)>0?' · <span style="color:var(--amber);">retención '+s.stake.toFixed(0)+' € al completar</span>':'')
+    +(hasInPlay(si)?' <span style="background:var(--amber-bg);color:var(--amber);font-size:11px;font-weight:600;padding:2px 7px;border-radius:10px;border:0.5px solid var(--amber-b);">⏳ En juego</span>':'')
     +'</div></div>';
 }
 
@@ -387,9 +391,15 @@ function renderPlay(){
   document.getElementById('ms-remaining').textContent=rem.toFixed(3)+'×';
   document.getElementById('ms-bets').textContent=c.bets.length;
 
+  var inplay=c.bets.some(function(b){return b.win===null;});
   document.getElementById('na-amount').textContent=now.toFixed(2)+' €';
   var subLabels=['Stake inicial','Neto comb.1 reinvertido','Bruto comb.2 reinvertido','Neto comb.3 reinvertido'];
-  document.getElementById('na-sub').textContent=subLabels[ci]+' · sub-apuesta '+(c.bets.length+1);
+  document.getElementById('na-sub').textContent=inplay?'Resuelve la apuesta en juego primero':subLabels[ci]+' · sub-apuesta '+(c.bets.length+1);
+  document.querySelector('.add-bet').style.opacity=inplay?'0.4':'';
+  document.querySelector('.add-bet').style.pointerEvents=inplay?'none':'';
+  document.querySelector('.btn-win').style.display=inplay?'none':'';
+  document.querySelector('.btn-lose').style.display=inplay?'none':'';
+  document.querySelector('.btn-play').style.display=inplay?'none':'';
 
   var retBox=document.getElementById('retention-box');
   if(ret>0){
@@ -422,6 +432,37 @@ function renderPlay(){
 }
 
 function setOdds(o){document.getElementById('odds-input').value=o.toFixed(2);document.getElementById('odds-input').focus();}
+
+function markInPlay(){
+  var odds=parseFloat(document.getElementById('odds-input').value);
+  if(!odds||odds<=1.01){
+    var inp=document.getElementById('odds-input');inp.focus();inp.style.borderColor='var(--red)';
+    setTimeout(function(){inp.style.borderColor='';},1500);return;
+  }
+  var s=SESSIONS[CUR];var ci=s.curComb;var c=s.combinadas[ci];
+  c.bets.push({odds:parseFloat(odds.toFixed(2)),win:null,stake:parseFloat((stakeForComb(CUR,ci)*c.accum).toFixed(2))});
+  document.getElementById('odds-input').value='';
+  save();renderPlay();
+}
+
+function resolveInPlay(betIdx,win){
+  var s=SESSIONS[CUR];var ci=s.curComb;var c=s.combinadas[ci];
+  var b=c.bets[betIdx];
+  if(b.win!==null) return;
+  b.win=win;
+  if(!win){c.status='lost';s.result='lost';save();renderResult();show('result');return;}
+  c.accum=parseFloat((c.accum*b.odds).toFixed(6));
+  var t=s.targets[ci];
+  if(c.accum>=t){
+    var sk=stakeForComb(CUR,ci);
+    var gross=parseFloat((sk*c.accum).toFixed(2));
+    var ret=retention(CUR,ci);
+    var net=parseFloat((gross-ret).toFixed(2));
+    c.gross=gross;c.net=net;c.status='done';
+    if(ci===3){s.result='won';save();renderResult();show('result');}
+    else{s.combinadas[ci+1].status='active';s.curComb=ci+1;save();renderPlay();}
+  }else{save();renderPlay();}
+}
 
 function resolveCurrentBet(win){
   var odds=parseFloat(document.getElementById('odds-input').value);
